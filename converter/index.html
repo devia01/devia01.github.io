@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <style>
+    @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(to right, #16A086, #1BBC9B);
+      color: #D7D7EF;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    h1 {
+      font-size: 32pt;
+      margin: 50px 0;
+    }
+
+    section {
+      flex-grow: 1;
+    }
+
+    .developer {
+      position: fixed;
+      right: 10pt;
+      bottom: 10pt;
+    }
+
+    .file-drop-area {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 90vmin;
+      max-width: 100%;
+      padding: 24pt;
+      border: 1px dashed rgba(255, 255, 255, 0.5);
+      border-radius: 3px;
+      transition: 0.2s;
+
+      &.is-active {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+    }
+
+    .fake-btn {
+      font-size: 20pt;
+      flex-shrink: 0;
+      background-color: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+      padding: 8px 15px;
+      margin-right: 20pt;
+      text-transform: uppercase;
+    }
+
+    .file-msg {
+      font-size: 20pt;
+      font-weight: 300;
+      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-input {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+      cursor: pointer;
+      opacity: 0;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  </style>
+  <title>TSM 컨버터</title>
+</head>
+
+<body>
+  <h1>TSM 컨버터</h1>
+  <div class="file-drop-area">
+    <span class="fake-btn">TSM 파일 선택</span>
+    <span class="file-msg">혹은 파일을 드래그 & 드롭 해주세요</span>
+    <input class="file-input" type="file" id="inputFile">
+  </div>
+
+  <span class="developer">TSM 컨버터 | 테일라(hando1220@naver.com)</span>
+
+  <script>
+    var fileInput = document.getElementById("inputFile");
+
+    fileInput.onchange = function () {
+      var name = (this.files[0].name).substr(0, this.files[0].name.length - 4);
+      var reader = new FileReader();
+      reader.onloadend = function () {
+        var data = this.result;
+        var length = this.result.length;
+        var output = new Uint8Array(length);
+
+        var iLen = 500 * 1024;
+        var iPattern = 250;
+        var iPass = 117;
+        var iKey = 3;
+        var firstHex = data.charCodeAt(0) & 0xff;
+
+        for (var i = 0; i < length; i++) {
+          output[i] = data.charCodeAt(i);
+        }
+
+        if (firstHex == 255 || firstHex == 80 || firstHex == 73) {
+          // 원본 파일
+        } else if (firstHex == 35 || firstHex == 140 || firstHex == 58) {
+          iPass = 115;
+          iKey = 3;
+          iLen = length > iLen ? iLen : length;
+
+          for (var i = 0; i < iLen; i += iPattern) {
+            output[i] = data.charCodeAt(i) & 0xff ^ iPass;
+            iPass = iPass + iKey;
+            iPass = iPass % 256;
+          }
+        } else { // if(firstHex == 75 || firstHex == 251)
+          iPass = 117;
+          iKey = 3;
+          iLen = length > iLen ? iLen : length;
+
+          if (firstHex == 75) {
+            output[0] = 80;
+          } else if (firstHex == 251) {
+            output[0] = 255;
+          }
+
+          for (var i = 250; i < iLen; i += iPattern) {
+            output[i] = data.charCodeAt(i) & 0xff ^ iPass;
+            iPass = iPass + iKey;
+            iPass = iPass % 256;
+          }
+        }
+
+        if ((firstHex == 35 || firstHex == 75 || firstHex == 80) && name.substr(0, 5) != "track") {
+          var blob = new Blob([output], { type: 'application/zip' });
+          var anchor = document.createElement('a');
+          anchor.download = name + ".zip";
+          anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
+          anchor.dataset.downloadurl = ['application/zip', anchor.download, anchor.href].join(':');
+          anchor.click();
+        } else {
+          var blob = new Blob([output], { type: 'audio/mpeg' });
+          var anchor = document.createElement('a');
+          anchor.download = name + ".mp3";
+          anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
+          anchor.dataset.downloadurl = ['audio/mpeg', anchor.download, anchor.href].join(':');
+          anchor.click();
+        }
+      };
+      reader.readAsBinaryString(this.files[0]);
+    };
+  </script>
+</body>
+
+</html>
