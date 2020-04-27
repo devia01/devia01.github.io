@@ -81,6 +81,9 @@ btn_start.addEventListener("click", function () {
       playAudio(subject.value, "시작령");
     }
 
+    subject.disabled = true;
+    document.getElementById("prepare").disabled = true;
+    document.getElementById("fast").disabled = true;
     btn_start.classList.remove("bg-blue-400", "hover:bg-blue-300");
     btn_start.classList.add("bg-gray-500", "hover:bg-gray-400");
     btn_start.innerHTML = "> 타이머 일시정지";
@@ -112,3 +115,5 @@ subject.addEventListener("change", function () {
   setInfo();
   updateClock();
 });
+
+updateClock();
