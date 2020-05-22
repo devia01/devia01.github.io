@@ -27,10 +27,6 @@
       margin: 50px 0;
     }
 
-    section {
-      flex-grow: 1;
-    }
-
     .developer {
       position: fixed;
       right: 10pt;
@@ -47,6 +43,7 @@
       border: 1px dashed rgba(255, 255, 255, 0.5);
       border-radius: 3px;
       transition: 0.2s;
+      margin-bottom: 12pt;
     }
 
     .file-drop-area .is-active {
@@ -95,29 +92,32 @@
   <div class="file-drop-area">
     <span class="fake-btn">TSM 파일 선택</span>
     <span class="file-msg">혹은 파일을 드래그 & 드롭 해주세요</span>
-    <input class="file-input" type="file" id="inputFile">
+    <input class="file-input" type="file" id="fileInput">
   </div>
+
+  <label for="checkBox"><input type="checkbox" name="v2" id="checkBox"> V2 컨버터 이용하기 (변환에 문제가 있을 경우 사용해주세요)</label>
 
   <span class="developer">TSM 컨버터 | 테일라(hando1220@naver.com)</span>
 
   <script>
-    var fileInput = document.getElementById("inputFile");
+    const $fileInput = document.getElementById("fileInput");
+    const $checkBox = document.getElementById("checkBox");
 
-    fileInput.onchange = function () {
-      var name = (this.files[0].name).substr(0, this.files[0].name.length - 4);
-      var reader = new FileReader();
+    $fileInput.onchange = function () {
+      let name = (this.files[0].name).substr(0, this.files[0].name.length - 4);
+      let reader = new FileReader();
       reader.onloadend = function () {
-        var data = this.result;
-        var length = this.result.length;
-        var output = new Uint8Array(length);
+        let data = this.result;
+        let length = this.result.length;
+        let output = new Uint8Array(length);
 
-        var iLen = 500 * 1024;
-        var iPattern = 250;
-        var iPass = 117;
-        var iKey = 3;
-        var firstHex = data.charCodeAt(0) & 0xff;
+        let iLen = 500 * 1024;
+        let iPattern = 250;
+        let iPass = 117;
+        let iKey = 3;
+        let firstHex = data.charCodeAt(0) & 0xff;
 
-        for (var i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
           output[i] = data.charCodeAt(i);
         }
 
@@ -128,7 +128,7 @@
           iKey = 3;
           iLen = length > iLen ? iLen : length;
 
-          for (var i = 0; i < iLen; i += iPattern) {
+          for (let i = 0; i < iLen; i += iPattern) {
             output[i] = data.charCodeAt(i) & 0xff ^ iPass;
             iPass = iPass + iKey;
             iPass = iPass % 256;
@@ -136,6 +136,12 @@
         } else { // if(firstHex == 75 || firstHex == 251)
           iPass = 117;
           iKey = 3;
+
+          if ($checkBox.checked == true) { // V2 컨버터
+            iPass = 87;
+            iPattern = 256;
+          }
+
           iLen = length > iLen ? iLen : length;
 
           if (firstHex == 75) {
@@ -144,7 +150,7 @@
             output[0] = 255;
           }
 
-          for (var i = 250; i < iLen; i += iPattern) {
+          for (let i = 250; i < iLen; i += iPattern) {
             output[i] = data.charCodeAt(i) & 0xff ^ iPass;
             iPass = iPass + iKey;
             iPass = iPass % 256;
@@ -152,15 +158,15 @@
         }
 
         if ((firstHex == 35 || firstHex == 75 || firstHex == 80) && name.substr(0, 5) != "track") {
-          var blob = new Blob([output], { type: 'application/zip' });
-          var anchor = document.createElement('a');
+          let blob = new Blob([output], { type: 'application/zip' });
+          let anchor = document.createElement('a');
           anchor.download = name + ".zip";
           anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
           anchor.dataset.downloadurl = ['application/zip', anchor.download, anchor.href].join(':');
           anchor.click();
         } else {
-          var blob = new Blob([output], { type: 'audio/mpeg' });
-          var anchor = document.createElement('a');
+          let blob = new Blob([output], { type: 'audio/mpeg' });
+          let anchor = document.createElement('a');
           anchor.download = name + ".mp3";
           anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
           anchor.dataset.downloadurl = ['audio/mpeg', anchor.download, anchor.href].join(':');
