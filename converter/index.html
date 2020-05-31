@@ -46,10 +46,6 @@
       margin-bottom: 12pt;
     }
 
-    .file-drop-area .is-active {
-      background-color: rgba(255, 255, 255, 0.05);
-    }
-
     .fake-btn {
       font-size: 20pt;
       flex-shrink: 0;
@@ -127,6 +123,11 @@
           iPass = 115;
           iKey = 3;
           iLen = length > iLen ? iLen : length;
+
+          if ($checkBox.checked == true) { // V2 컨버터
+            iLen = length
+            iPattern = 100;
+          }
 
           for (let i = 0; i < iLen; i += iPattern) {
             output[i] = data.charCodeAt(i) & 0xff ^ iPass;
