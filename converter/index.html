@@ -7,6 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-168049380-1"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -14,8 +15,6 @@
     gtag('config', 'UA-168049380-1');
   </script>
   <style>
-    @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
-
     html, body {
       height: 100%;
       margin: 0;
@@ -31,42 +30,43 @@
     }
 
     h1 {
-      font-size: 32pt;
-      margin: 50px 0;
+      font-size: 2.5rem;
+      margin: 2.5rem 0;
     }
 
     .developer {
+      font-size: small;
       position: fixed;
-      right: 10pt;
-      bottom: 10pt;
+      right: 1rem;
+      bottom: 1rem;
     }
 
     .file-drop-area {
       position: relative;
       display: flex;
+      box-sizing: border-box;
       align-items: center;
       width: 90vmin;
-      max-width: 100%;
-      padding: 24pt;
+      padding: 2rem;
       border: 1px dashed rgba(255, 255, 255, 0.5);
-      border-radius: 3px;
+      border-radius: 0.25rem;
       transition: 0.2s;
-      margin-bottom: 12pt;
+      margin-bottom: 1rem;
     }
 
     .fake-btn {
-      font-size: 20pt;
+      font-size: 1.5rem;
       flex-shrink: 0;
       background-color: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 3px;
-      padding: 8px 15px;
-      margin-right: 20pt;
+      border-radius: 0.25rem;
+      padding: 0.5rem 1rem;
+      margin-right: 1.5rem;
       text-transform: uppercase;
     }
 
     .file-msg {
-      font-size: 20pt;
+      font-size: 1.5rem;
       font-weight: 300;
       line-height: 1.4;
       white-space: nowrap;
@@ -82,10 +82,6 @@
       width: 100%;
       cursor: pointer;
       opacity: 0;
-    }
-
-    .file-input:focus {
-      outline: none;
     }
   </style>
   <title>TSM 컨버터</title>
